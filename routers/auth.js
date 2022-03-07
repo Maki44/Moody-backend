@@ -9,7 +9,7 @@ const router = new Router();
 
 router.post("/login", async (req, res, next) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, lat, lng } = req.body;
 
     if (!email || !password) {
       return res
@@ -21,10 +21,10 @@ router.post("/login", async (req, res, next) => {
 
     if (!user || !bcrypt.compareSync(password, user.password)) {
       return res.status(400).send({
-        message: "User with that email not found or password incorrect"
+        message: "User with that email not found or password incorrect",
       });
     }
-
+    await user.update({ ...user, lat, lng });
     delete user.dataValues["password"]; // don't send back the password hash
     const token = toJWT({ userId: user.id });
     return res.status(200).send({ token, ...user.dataValues });
@@ -35,7 +35,7 @@ router.post("/login", async (req, res, next) => {
 });
 
 router.post("/signup", async (req, res) => {
-  const { email, password, name } = req.body;
+  const { email, password, name, lat, lng } = req.body;
   if (!email || !password || !name) {
     return res.status(400).send("Please provide an email, password and a name");
   }
@@ -44,9 +44,11 @@ router.post("/signup", async (req, res) => {
     const newUser = await User.create({
       email,
       password: bcrypt.hashSync(password, SALT_ROUNDS),
-      name
+      name,
+      lat,
+      lng,
     });
-
+    console.log("newUser", newUser);
     delete newUser.dataValues["password"]; // don't send back the password hash
 
     const token = toJWT({ userId: newUser.id });
@@ -58,7 +60,7 @@ router.post("/signup", async (req, res) => {
         .status(400)
         .send({ message: "There is an existing account with this email" });
     }
-
+    console.log("error", error);
     return res.status(400).send({ message: "Something went wrong, sorry" });
   }
 });
