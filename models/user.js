@@ -9,10 +9,6 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      user.belongsToMany(models.mood, {
-        through: "userMood",
-        foreignKey: "userId",
-      });
       user.belongsToMany(models.passion, {
         through: "userPassion",
         foreignKey: "userId",
@@ -47,6 +43,10 @@ module.exports = (sequelize, DataTypes) => {
       },
       lng: {
         type: DataTypes.FLOAT,
+        allowNull: false,
+      },
+      city: {
+        type: DataTypes.STRING,
         allowNull: false,
       },
       bio: {

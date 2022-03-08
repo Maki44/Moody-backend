@@ -6,37 +6,37 @@ module.exports = {
       "moods",
       [
         {
-          name: "walk",
+          name: "Drink",
           createdAt: new Date(),
           updatedAt: new Date(),
         },
         {
-          name: "drinking",
+          name: "Eating in a resturant",
           createdAt: new Date(),
           updatedAt: new Date(),
         },
         {
-          name: "clubbing",
+          name: "Club",
           createdAt: new Date(),
           updatedAt: new Date(),
         },
         {
-          name: "bolling",
+          name: "Bowling",
           createdAt: new Date(),
           updatedAt: new Date(),
         },
         {
-          name: "cinema",
+          name: "Cinema",
           createdAt: new Date(),
           updatedAt: new Date(),
         },
         {
-          name: "swimming",
+          name: "Walk",
           createdAt: new Date(),
           updatedAt: new Date(),
         },
         {
-          name: "climbing",
+          name: "Swimming",
           createdAt: new Date(),
           updatedAt: new Date(),
         },

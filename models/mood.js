@@ -8,11 +8,6 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
-      mood.belongsToMany(models.user, {
-        through: "userMood",
-        foreignKey: "moodId",
-      });
       mood.hasMany(models.activity);
     }
   }

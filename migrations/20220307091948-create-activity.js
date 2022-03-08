@@ -28,6 +28,14 @@ module.exports = {
       maxAge: {
         type: Sequelize.INTEGER,
       },
+      city: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      expirationDate: {
+        type: Sequelize.DATE,
+        defaultValue: Date.now() + 8.64e7,
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
