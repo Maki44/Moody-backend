@@ -58,7 +58,7 @@ router.post("/:id", authMiddleware, async (req, res, next) => {
   }
 });
 
-router.post("/join/:id", async (req, res, next) => {
+router.post("/join/:id", authMiddleware, async (req, res, next) => {
   try {
     // id is sent from client is Activity Id
     const { id } = req.params;
@@ -80,7 +80,10 @@ router.post("/join/:id", async (req, res, next) => {
         userId,
         activityId,
       },
-      include: [{ model: Activity, include: [Mood] }],
+      include: [
+        { model: User, attributes: { exclude: ["password"] } },
+        { model: Activity, include: [Mood] },
+      ],
     });
     res.json(userActivity);
   } catch (error) {
