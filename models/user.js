@@ -45,7 +45,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.FLOAT,
         allowNull: false,
       },
-      city: {
+      address: {
         type: DataTypes.STRING,
         allowNull: false,
       },

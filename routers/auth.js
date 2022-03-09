@@ -31,10 +31,11 @@ router.post("/login", async (req, res, next) => {
     const response = await axios.get(
       `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyARCxfkZP2leKqrjHPxbSxbJLazD1EGIJ0`
     );
-    const city = response.data.results[7].formatted_address.split(",")[0];
+    console.log("response from Api", response.data);
+    const address = response.data.results[0].formatted_address;
 
-    await user.update({ ...user, lat, lng, city });
-    console.log("user", user);
+    //await user.update({ ...user, lat, lng, address });
+    //console.log("user", user);
     delete user.dataValues["password"]; // don't send back the password hash
     const token = toJWT({ userId: user.id });
     const userId = user.id;
@@ -60,8 +61,7 @@ router.post("/signup", async (req, res) => {
   const response = await axios.get(
     `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyARCxfkZP2leKqrjHPxbSxbJLazD1EGIJ0`
   );
-  const city = response.data.results[7].formatted_address.split(",")[0];
-  console.log("city", city);
+  const address = response.data.results[0].formatted_address;
   try {
     const newUser = await User.create({
       email,
@@ -69,7 +69,7 @@ router.post("/signup", async (req, res) => {
       name,
       lat,
       lng,
-      city,
+      address,
     });
     //console.log("newUser", newUser);
     delete newUser.dataValues["password"]; // don't send back the password hash

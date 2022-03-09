@@ -22,7 +22,8 @@ module.exports = (sequelize, DataTypes) => {
     {
       lat: { type: DataTypes.FLOAT, allowNull: false },
       lng: { type: DataTypes.FLOAT, allowNull: false },
-      city: { type: DataTypes.STRING, allowNull: false },
+      address: { type: DataTypes.STRING, allowNull: false },
+      placeName: { type: DataTypes.STRING, allowNull: false },
       description: DataTypes.TEXT,
       maxPersons: DataTypes.INTEGER,
       minAge: DataTypes.INTEGER,

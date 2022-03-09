@@ -6,6 +6,7 @@ const Mood = require("../models").mood;
 const User = require("../models").user;
 const Activity = require("../models").activity;
 const UserActivity = require("../models").userActivity;
+const filterActivities = require("../utilis/filterActivities");
 
 const router = new Router();
 
@@ -13,7 +14,8 @@ router.post("/:id", authMiddleware, async (req, res, next) => {
   // Mood Id passed as parameter
   const { id } = req.params;
   const userId = req.user.id;
-  const { minAge, maxAge, maxPersons, description, lat, lng } = req.body;
+  const { minAge, maxAge, maxPersons, description, lat, lng, placeName } =
+    req.body;
   console.log("req, body", req.body);
   try {
     // find the mood and the user
@@ -25,12 +27,14 @@ router.post("/:id", authMiddleware, async (req, res, next) => {
     const response = await axios.get(
       `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyARCxfkZP2leKqrjHPxbSxbJLazD1EGIJ0`
     );
-    const city = response.data.results[7].formatted_address.split(",")[0];
+    console.log("response from Api", response.data);
+    const address = response.data.results[0].formatted_address;
     // Create Activity
     const activity = await Activity.create({
       lat,
       lng,
-      city,
+      address,
+      placeName,
       minAge,
       maxAge,
       maxPersons,
@@ -94,10 +98,12 @@ router.post("/join/:id", authMiddleware, async (req, res, next) => {
 
 router.get("/", authMiddleware, async (req, res, next) => {
   try {
+    const user = req.user;
     const activities = await Activity.findAll({
       include: [User, Mood],
     });
-    res.json(activities);
+    const filteredActivities = filterActivities(activities, user);
+    res.json(filteredActivities);
   } catch (error) {
     console.log(error);
     next(error);

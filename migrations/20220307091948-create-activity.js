@@ -28,7 +28,11 @@ module.exports = {
       maxAge: {
         type: Sequelize.INTEGER,
       },
-      city: {
+      address: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      placeName: {
         type: Sequelize.STRING,
         allowNull: false,
       },

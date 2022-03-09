@@ -35,7 +35,7 @@ module.exports = {
       bio: {
         type: Sequelize.TEXT,
       },
-      city: {
+      address: {
         type: Sequelize.STRING,
         allowNull: false,
       },
