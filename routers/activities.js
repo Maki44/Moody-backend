@@ -96,14 +96,40 @@ router.post("/join/:id", authMiddleware, async (req, res, next) => {
   }
 });
 
+router.put("/disJoin/:id", async (req, res) => {
+  try {
+    // id is sent from client is Activity Id
+    const { id } = req.params;
+    // Check Activity with the give Id
+    const activity = await Activity.findByPk(parseInt(id));
+    if (!activity) {
+      return res.status(404).send("Activity Not found");
+    }
+    //const userId = req.user.id;
+    const userId = 1;
+    // Get the user From DB;
+    const user = await User.findByPk(userId);
+    // delete Activity
+    await user.removeActivity(activity);
+    const newActivity = await Activity.findByPk(parseInt(id), {
+      include: [
+        { model: User, attributes: { exclude: ["password"] } },
+        { model: Mood },
+      ],
+    });
+    res.json(newActivity);
+  } catch (error) {
+    console.log(error);
+  }
+});
 router.get("/", authMiddleware, async (req, res, next) => {
   try {
     const user = req.user;
     const activities = await Activity.findAll({
-      include: [User, Mood],
+      include: [{ model: User, attributes: { exclude: ["password"] } }, Mood],
     });
-    const filteredActivities = filterActivities(activities, user);
-    res.json(filteredActivities);
+    const activitiesFiltered = filterActivities(activities, user);
+    res.send(activitiesFiltered);
   } catch (error) {
     console.log(error);
     next(error);
@@ -118,6 +144,21 @@ router.get("/places/:name/:lat/:lng", async (req, res) => {
     );
     //console.log(JSON.stringify(response.data));
     res.send(JSON.stringify(response.data));
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+router.get("/users/:id", authMiddleware, async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const activity = await Activity.findByPk(parseInt(id), {
+      include: [{ model: User, attributes: { exclude: ["password"] } }],
+    });
+    if (!activity) {
+      return res.status(404).send("Activity does not exist");
+    }
+    res.send(activity);
   } catch (error) {
     console.log(error);
   }
