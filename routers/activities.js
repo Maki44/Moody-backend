@@ -27,7 +27,19 @@ router.post("/:id", authMiddleware, async (req, res, next) => {
     const response = await axios.get(
       `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyARCxfkZP2leKqrjHPxbSxbJLazD1EGIJ0`
     );
-    console.log("response from Api", response.data);
+    // Delete existing activities
+    const userActivityAll = await UserActivity.findAll({
+      where: {
+        userId,
+      },
+    });
+    console.log("user Activity", userActivityAll);
+    userActivityAll.forEach(async (userActivity) => {
+      const { activityId } = userActivity;
+      const previousAddedActivity = await Activity.findByPk(activityId);
+      await user.removeActivity(previousAddedActivity);
+    });
+
     const address = response.data.results[0].formatted_address;
     // Create Activity
     const activity = await Activity.create({
@@ -55,6 +67,7 @@ router.post("/:id", authMiddleware, async (req, res, next) => {
         { model: Activity, include: [Mood] },
       ],
     });
+
     res.json(userActivity);
   } catch (error) {
     console.log(error);
@@ -76,6 +89,18 @@ router.post("/join/:id", authMiddleware, async (req, res, next) => {
     // Get the user From DB;
     const user = await User.findByPk(userId);
 
+    // Delete existing activities
+    const userActivityAll = await UserActivity.findAll({
+      where: {
+        userId,
+      },
+    });
+    console.log("user Activity", userActivityAll);
+    userActivityAll.forEach(async (userActivity) => {
+      const { activityId } = userActivity;
+      const previousAddedActivity = await Activity.findByPk(activityId);
+      await user.removeActivity(previousAddedActivity);
+    });
     // Add Activity to user
     await user.addActivity(activity);
     // get UserActivity and send to client
@@ -96,7 +121,7 @@ router.post("/join/:id", authMiddleware, async (req, res, next) => {
   }
 });
 
-router.put("/disJoin/:id", async (req, res) => {
+router.put("/disjoin/:id", authMiddleware, async (req, res) => {
   try {
     // id is sent from client is Activity Id
     const { id } = req.params;
@@ -105,8 +130,7 @@ router.put("/disJoin/:id", async (req, res) => {
     if (!activity) {
       return res.status(404).send("Activity Not found");
     }
-    //const userId = req.user.id;
-    const userId = 1;
+    const userId = req.user.id;
     // Get the user From DB;
     const user = await User.findByPk(userId);
     // delete Activity
