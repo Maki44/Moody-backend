@@ -6,6 +6,7 @@ const authRouter = require("./routers/auth");
 const moodsRouter = require("./routers/moods");
 const activitiesRouter = require("./routers/activities");
 const passionsRouter = require("./routers/passions");
+const avatarsRouter = require("./routers/avatar");
 const { PORT } = require("./config/constants");
 
 // Create an express app
@@ -38,6 +39,7 @@ app.use("/auth", authRouter);
 app.use("/moods", moodsRouter);
 app.use("/activities", activitiesRouter);
 app.use("/passions", passionsRouter);
+app.use("/avatars", avatarsRouter);
 
 // POST endpoint which requires a token for testing purposes, can be removed
 app.post("/authorized_post_request", authMiddleWare, (req, res) => {
