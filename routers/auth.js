@@ -7,6 +7,7 @@ const User = require("../models/").user;
 const UserActivity = require("../models/").userActivity;
 const Activity = require("../models/").activity;
 const Mood = require("../models").mood;
+const Passion = require("../models").passion;
 const { SALT_ROUNDS } = require("../config/constants");
 //require("dotenv").config();
 const router = new Router();
@@ -21,7 +22,10 @@ router.post("/login", async (req, res, next) => {
         .send({ message: "Please provide both email and password" });
     }
 
-    const user = await User.findOne({ where: { email }, include: [] });
+    const user = await User.findOne({
+      where: { email },
+      include: [{ model: Passion, attributes: ["name", "id"] }],
+    });
 
     if (!user || !bcrypt.compareSync(password, user.password)) {
       return res.status(400).send({
@@ -45,6 +49,8 @@ router.post("/login", async (req, res, next) => {
       },
       include: [{ model: Activity, include: [Mood] }],
     });
+    console.log("user information with datatValuse", user.dataValues);
+    console.log("user information without datatValuse", user);
     return res.status(200).send({ token, ...user.dataValues, userActivity });
   } catch (error) {
     console.log(error);
@@ -57,6 +63,9 @@ router.post("/signup", async (req, res) => {
   if (!email || !password || !name) {
     return res.status(400).send("Please provide an email, password and a name");
   }
+  const variant = ["marble", "beam", "pixel", "sunset", "ring", "bauhaus"];
+  const randomIndex = Math.floor(Math.random() * (5 + 1));
+  const avatar = `https://source.boringavatars.com/${variant[randomIndex]}/80/${name}`;
   //const API_KEY = process.env.API_KEY;
   const response = await axios.get(
     `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyARCxfkZP2leKqrjHPxbSxbJLazD1EGIJ0`
@@ -70,6 +79,7 @@ router.post("/signup", async (req, res) => {
       lat,
       lng,
       address,
+      avatar,
     });
     //console.log("newUser", newUser);
     delete newUser.dataValues["password"]; // don't send back the password hash
