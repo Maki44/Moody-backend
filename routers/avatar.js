@@ -1,4 +1,6 @@
 const { Router } = require("express");
+const authMiddleware = require("../auth/middleware");
+const User = require("../models").user;
 const {
   accessory,
   cloth,
@@ -42,6 +44,18 @@ router.get("/", async (req, res, next) => {
   } catch (error) {
     console.log(error);
     next(error);
+  }
+});
+
+router.put("/user", authMiddleware, async (req, res) => {
+  try {
+    const { avatar } = req.body;
+    const userId = req.user.id;
+    const user = await User.findByPk(userId);
+    await user.update({ ...user, avatar });
+    res.send(user);
+  } catch (error) {
+    console.log(error);
   }
 });
 
