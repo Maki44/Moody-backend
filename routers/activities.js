@@ -6,8 +6,10 @@ const Mood = require("../models").mood;
 const User = require("../models").user;
 const Activity = require("../models").activity;
 const UserActivity = require("../models").userActivity;
+const Passion = require("../models").passion;
 const filterActivities = require("../utilis/filterActivities");
-
+const getPlacePhoto = require("../utilis/getPlacePhoto");
+require("dotenv").config();
 const router = new Router();
 
 router.post("/:id", authMiddleware, async (req, res, next) => {
@@ -25,7 +27,7 @@ router.post("/:id", authMiddleware, async (req, res, next) => {
       return res.status(404).send({ message: "Activity does not exist" });
     }
     const response = await axios.get(
-      `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyARCxfkZP2leKqrjHPxbSxbJLazD1EGIJ0`
+      `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${process.env.API_KEY}`
     );
     // Delete existing activities
     const userActivityAll = await UserActivity.findAll({
@@ -150,7 +152,14 @@ router.get("/", authMiddleware, async (req, res, next) => {
   try {
     const user = req.user;
     const activities = await Activity.findAll({
-      include: [{ model: User, attributes: { exclude: ["password"] } }, Mood],
+      include: [
+        {
+          model: User,
+          attributes: { exclude: ["password"] },
+          include: [Passion],
+        },
+        Mood,
+      ],
     });
     const activitiesFiltered = filterActivities(activities, user);
     res.send(activitiesFiltered);
@@ -164,10 +173,31 @@ router.get("/places/:name/:lat/:lng", async (req, res) => {
   try {
     const { name, lat, lng } = req.params;
     const response = await axios.get(
-      `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat}%2C${lng}&radius=1500&type=${name}&key=AIzaSyARCxfkZP2leKqrjHPxbSxbJLazD1EGIJ0`
+      `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat}%2C${lng}&radius=1500&type=${name}&key=${process.env.API_KEY}`
     );
-    //console.log(JSON.stringify(response.data));
-    res.send(JSON.stringify(response.data));
+    const results = response.data.results;
+    console.log("results", results);
+    const promises = results.map(async (result) => {
+      const { geometry, name, opening_hours, photos, rating } = result;
+      let photo = "";
+      if (photos && photo === "") {
+        const photoReference = photos[0]["photo_reference"];
+        photo = await getPlacePhoto(photoReference);
+      }
+      return {
+        location: geometry.location,
+        name,
+        opening_hours,
+        rating,
+        photo,
+      };
+    });
+    const filteredData = await Promise.all(promises);
+    const sortByRating = filteredData.sort((a, b) => b.rating - a.rating);
+    console.log("sorted format", sortByRating);
+
+    //res.send(JSON.stringify(response.data));
+    res.send(sortByRating);
   } catch (error) {
     console.log(error);
   }
@@ -177,7 +207,13 @@ router.get("/users/:id", authMiddleware, async (req, res, next) => {
   try {
     const { id } = req.params;
     const activity = await Activity.findByPk(parseInt(id), {
-      include: [{ model: User, attributes: { exclude: ["password"] } }],
+      include: [
+        {
+          model: User,
+          attributes: { exclude: ["password"] },
+          include: [Passion],
+        },
+      ],
     });
     if (!activity) {
       return res.status(404).send("Activity does not exist");

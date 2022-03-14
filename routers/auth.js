@@ -9,7 +9,7 @@ const Activity = require("../models/").activity;
 const Mood = require("../models").mood;
 const Passion = require("../models").passion;
 const { SALT_ROUNDS } = require("../config/constants");
-//require("dotenv").config();
+require("dotenv").config();
 const router = new Router();
 
 router.post("/login", async (req, res, next) => {
@@ -33,7 +33,7 @@ router.post("/login", async (req, res, next) => {
       });
     }
     const response = await axios.get(
-      `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyARCxfkZP2leKqrjHPxbSxbJLazD1EGIJ0`
+      `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${process.env.API_KEY}`
     );
     console.log("response from Api", response.data);
     const address = response.data.results[0].formatted_address;
@@ -68,7 +68,7 @@ router.post("/signup", async (req, res) => {
   const avatar = `https://source.boringavatars.com/${variant[randomIndex]}/80/${name}`;
   //const API_KEY = process.env.API_KEY;
   const response = await axios.get(
-    `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyARCxfkZP2leKqrjHPxbSxbJLazD1EGIJ0`
+    `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${process.env.API_KEY}`
   );
   const address = response.data.results[0].formatted_address;
   try {
