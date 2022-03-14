@@ -16,9 +16,6 @@ module.exports = {
         type: Sequelize.FLOAT,
         allowNull: false,
       },
-      description: {
-        type: Sequelize.TEXT,
-      },
       maxPersons: {
         type: Sequelize.INTEGER,
       },
@@ -31,6 +28,9 @@ module.exports = {
       address: {
         type: Sequelize.STRING,
         allowNull: false,
+      },
+      photo: {
+        type: Sequelize.STRING,
       },
       placeName: {
         type: Sequelize.STRING,

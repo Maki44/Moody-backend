@@ -16,8 +16,7 @@ router.post("/:id", authMiddleware, async (req, res, next) => {
   // Mood Id passed as parameter
   const { id } = req.params;
   const userId = req.user.id;
-  const { minAge, maxAge, maxPersons, description, lat, lng, placeName } =
-    req.body;
+  const { minAge, maxAge, maxPersons, lat, lng, placeName, photo } = req.body;
   console.log("req, body", req.body);
   try {
     // find the mood and the user
@@ -52,8 +51,8 @@ router.post("/:id", authMiddleware, async (req, res, next) => {
       minAge,
       maxAge,
       maxPersons,
-      description,
       moodId: id,
+      photo,
     });
     // Add activity to user
     await user.addActivity(activity);

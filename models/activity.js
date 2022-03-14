@@ -24,7 +24,6 @@ module.exports = (sequelize, DataTypes) => {
       lng: { type: DataTypes.FLOAT, allowNull: false },
       address: { type: DataTypes.STRING, allowNull: false },
       placeName: { type: DataTypes.STRING, allowNull: false },
-      description: DataTypes.TEXT,
       maxPersons: DataTypes.INTEGER,
       minAge: DataTypes.INTEGER,
       maxAge: DataTypes.INTEGER,
@@ -32,6 +31,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.DATE,
         defaultValue: Date.now() + 8.64e7,
       },
+      photo: { type: DataTypes.STRING },
     },
     {
       sequelize,
