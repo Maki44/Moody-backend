@@ -168,9 +168,9 @@ router.get("/", authMiddleware, async (req, res, next) => {
   }
 });
 
-router.get("/places/:name/:lat/:lng", async (req, res) => {
+router.get("/places", async (req, res) => {
   try {
-    const { name, lat, lng } = req.params;
+    const { name, lat, lng } = req.query;
     const response = await axios.get(
       `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat}%2C${lng}&radius=1500&type=${name}&key=${process.env.API_KEY}`
     );
