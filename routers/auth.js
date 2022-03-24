@@ -63,9 +63,10 @@ router.post("/signup", async (req, res) => {
   if (!email || !password || !name) {
     return res.status(400).send("Please provide an email, password and a name");
   }
+  // beam to be change
   const variant = ["marble", "beam", "pixel", "sunset", "ring", "bauhaus"];
   const randomIndex = Math.floor(Math.random() * (5 + 1));
-  const avatar = `https://source.boringavatars.com/${variant[randomIndex]}/80/${name}`;
+  const avatar = `https://source.boringavatars.com/beam/80/${name}`;
   //const API_KEY = process.env.API_KEY;
   const response = await axios.get(
     `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${process.env.API_KEY}`
